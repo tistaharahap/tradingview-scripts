@@ -1,8 +1,8 @@
 //@version=4
 study(title="Divergence Indicator", format=format.price)
 
-len = input(title="RSI Period", minval=1, defval=14)
-src = input(title="RSI Source", defval=close)
+len = input(title="MFI Period", minval=1, defval=14)
+src = input(title="MFI Source", defval=close)
 lbR = input(title="Pivot Lookback Right", defval=5)
 lbL = input(title="Pivot Lookback Left", defval=5)
 rangeUpper = input(title="Max of Lookback Range", defval=60)
