@@ -14,8 +14,6 @@ plotBull = input(title="Plot Bullish", defval=true)
 plotHiddenBull = input(title="Plot Hidden Bullish", defval=false)
 plotBear = input(title="Plot Bearish", defval=true)
 plotHiddenBear = input(title="Plot Hidden Bearish", defval=false)
-hiddenBullPriceSmoothing = input(title="Hidden Bulllish Price Smoothing", defval=5)
-hiddenBearPriceSmoothing = input(title="Hidden Bearish Price Smoothing", defval=5)
 
 bearColor = color.red
 bullColor = color.green
