@@ -10,6 +10,14 @@ The scripts here are oscillators usually being used to spot overbought or overso
 
 Money Flow Index indicator script taken from [https://www.tradingview.com/script/g58H59ub-Money-Flow-Index-Beasley-Savage/](https://www.tradingview.com/script/g58H59ub-Money-Flow-Index-Beasley-Savage/).
 
+## Histograms
+
+The scripts are are histograms to spot weaknesses we can exploit. Also good for divergences if applicable.
+
+### CM Williams Fix Vix Red Green
+
+Modified from [https://www.tradingview.com/script/og7JPrRA-CM-Williams-Vix-Fix-Finds-Market-Bottoms/](https://www.tradingview.com/script/og7JPrRA-CM-Williams-Vix-Fix-Finds-Market-Bottoms/) to also draw red bars for shorting opportunities.
+
 ## Divergences
 
 The scripts here will plot bullish and bearish divergences both hiddens or regulars.
