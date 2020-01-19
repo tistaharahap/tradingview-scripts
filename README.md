@@ -29,3 +29,11 @@ Modified TradingView's built-in `Divergences Indicator` script to use [Commodity
 ### MFI Divergences
 
 Modified TradingView's built in `Divergences Indicator` script to use [Money Flow Index](https://www.investopedia.com/terms/m/mfi.asp) indicator as the oscillator. Money Flow Index indicator script taken from [https://www.tradingview.com/script/g58H59ub-Money-Flow-Index-Beasley-Savage/](https://www.tradingview.com/script/g58H59ub-Money-Flow-Index-Beasley-Savage/).
+
+## Averages
+
+The scripts here will plot moving average indicators.
+
+### Tri VWMA
+
+Use 3 VWMA ribbons with only 1 indicator.
