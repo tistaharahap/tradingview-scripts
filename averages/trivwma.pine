@@ -1,0 +1,17 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © tista
+
+//@version=4
+study("Tri VWMA", shorttitle="TriVWMA", precision=2, overlay=true)
+
+vwma1_length = input(title="VWMA1 Length", type=input.integer, defval=21)
+vwma2_length = input(title="VWMA2 Length", type=input.integer, defval=55)
+vwma3_length = input(title="VWMA3 Length", type=input.integer, defval=224)
+
+vwma1 = vwma(close, vwma1_length)
+vwma2 = vwma(close, vwma2_length)
+vwma3 = vwma(close, vwma3_length)
+
+plot(vwma1, title="VWMA1", color=#00bcd4, linewidth=3)
+plot(vwma2, title="VWMA2", color=#66bb6a, linewidth=3)
+plot(vwma3, title="VWMA3", color=#e91e62, linewidth=3)
