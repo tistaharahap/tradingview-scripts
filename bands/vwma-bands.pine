@@ -1,0 +1,31 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © tista
+
+//@version=4
+study("VWMA Band", overlay=true)
+
+vwmaPeriod = input(title="VWMA Period", defval=5)
+showVwmaBand = input(title="Show VWMA Band", defval=true)
+minThreshold = input(title="Minimum Threshold", defval=26.0)
+
+vwmaHigh = vwma(high, vwmaPeriod)
+vwmaLow = vwma(low, vwmaPeriod)
+vwmaHl2 = vwma(hl2, vwmaPeriod)
+vwmaClose = vwma(close, vwmaPeriod)
+diff = vwmaHigh - vwmaLow
+
+closeUnderHL2 = crossunder(vwmaClose, vwmaHl2) and open > vwmaClose and diff >= minThreshold ? -1 : na
+closeOverHL2 = crossover(vwmaClose, vwmaHl2) and open < vwmaClose and diff >= minThreshold ? 1 : na
+
+alertcondition(closeUnderHL2, title="VWMA Band - Short", message="VWMA Close just crossed under VWMA HL2, time to short.")
+alertcondition(closeOverHL2, title="VWMA Band - Long", message="VWMA Close just crossed over VWMA HL2, time to long.")
+
+bandHigh = plot(showVwmaBand ? vwmaHigh : na, title="VWMA High", color=color.white, linewidth=1, transp=80)
+bandLow = plot(showVwmaBand ? vwmaLow : na, title="VWMA Low", color=color.white, linewidth=1, transp=80)
+plot(showVwmaBand ? vwmaHl2 : na, title="VWMA HL2", color=color.white, linewidth=1, transp=80)
+plot(vwmaClose, title="VWMA Close", color=color.blue, linewidth=2, transp=0)
+
+plotarrow(closeUnderHL2, title="Close Under HL2", colordown=color.orange, colorup=color.green, maxheight=15)
+plotarrow(closeOverHL2, title="Close Over HL2", colordown=color.orange, colorup=color.green, maxheight=15)
+fill(bandLow, bandHigh, title="VWMA Band", color=color.white, transp=95)
+

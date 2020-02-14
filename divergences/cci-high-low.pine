@@ -2,10 +2,9 @@
 // © tista
 
 //@version=4
-study(title="CCI Divergences", format=format.price)
+study(title="CCI Low/High Divergences", format=format.price)
 
 len = input(title="CCI Period", minval=1, defval=14)
-src = input(title="CCI Source", defval=close)
 lbR = input(title="Pivot Lookback Right", defval=5)
 lbL = input(title="Pivot Lookback Left", defval=5)
 rangeUpper = input(title="Max of Lookback Range", defval=60)
@@ -22,30 +21,27 @@ hiddenBearColor = color.red
 textColor = color.white
 noneColor = color.new(color.white, 100)
 
-osc = cci(src, len)
+oscBull = cci(low, len)
+oscBear = cci(close, len)
 
-plot(osc, title="CCI", linewidth=2, color=color.yellow)
+plot(oscBull, title="Lows", linewidth=1, color=color.green, transp=0)
+plot(oscBear, title="Highs", linewidth=1, color=color.red, transp=0)
 obLevel = hline(100, title="Overbought", linestyle=hline.style_dotted)
 osLevel = hline(-100, title="Oversold", linestyle=hline.style_dotted)
 fill(obLevel, osLevel, title="Background", color=color.gray, transp=80)
 
-plFound = na(pivotlow(osc, lbL, lbR)) ? false : true
-phFound = na(pivothigh(osc, lbL, lbR)) ? false : true
+plFound = na(pivotlow(oscBull, lbL, lbR)) ? false : true
+phFound = na(pivothigh(oscBear, lbL, lbR)) ? false : true
 
 _inRange(cond) =>
     bars = barssince(cond == true)
     rangeLower <= bars and bars <= rangeUpper
 
-alertcondition(osc[1] > 100.0 and osc[2] < 100.0, title="CCI value crosses over 100.0", message="Check charts for a CCI cross over 100.0")
-alertcondition(osc[1] < 100.0 and osc[2] > 100.0, title="CCI value crosses under 100.0", message="Check charts for a CCI cross under 100.0")
-alertcondition(osc[1] > -100. and osc[2] < -100.0, title="CCI value crosses over -100.0", message="Check charts for a CCI cross over -100.0")
-alertcondition(osc[1] < -100.0 and osc[2] > -100.0, title="CCI value crosses under -100.0", message="Check charts for a CCI cross under -100.0")
-
 //------------------------------------------------------------------------------
 // Regular Bullish
 
 // Osc: Higher Low
-oscHL = osc[lbR] > valuewhen(plFound, osc[lbR], 1) and _inRange(plFound[1])
+oscHL = oscBull[lbR] > valuewhen(plFound, oscBull[lbR], 1) and _inRange(plFound[1])
 
 // Price: Lower Low
 priceLL = low[lbR] < valuewhen(plFound, low[lbR], 1)
@@ -53,7 +49,7 @@ priceLL = low[lbR] < valuewhen(plFound, low[lbR], 1)
 bullCond = plotBull and priceLL and oscHL and plFound
 
 plot(
-	 plFound ? osc[lbR] : na,
+	 plFound ? oscBull[lbR] : na,
 	 offset=-lbR,
 	 title="Regular Bullish",
 	 linewidth=2,
@@ -62,7 +58,7 @@ plot(
 	 )
 
 plotshape(
-	 bullCond ? osc[lbR] : na,
+	 bullCond ? oscBull[lbR] : na,
 	 offset=-lbR,
 	 title="Regular Bullish Label",
 	 text=" Bull ",
@@ -79,7 +75,7 @@ alertcondition(bullCond, title="Regular bullish divergence in CCI found", messag
 // Hidden Bullish
 
 // Osc: Lower Low
-oscLL = osc[lbR] < valuewhen(plFound, osc[lbR], 1) and _inRange(plFound[1])
+oscLL = oscBull[lbR] < valuewhen(plFound, oscBull[lbR], 1) and _inRange(plFound[1])
 
 // Price: Higher Low
 priceHL = low[lbR] > valuewhen(plFound, low[lbR], 1)
@@ -87,7 +83,7 @@ priceHL = low[lbR] > valuewhen(plFound, low[lbR], 1)
 hiddenBullCond = plotHiddenBull and priceHL and oscLL and plFound
 
 plot(
-	 plFound ? osc[lbR] : na,
+	 plFound ? oscBull[lbR] : na,
 	 offset=-lbR,
 	 title="Hidden Bullish",
 	 linewidth=2,
@@ -96,7 +92,7 @@ plot(
 	 )
 
 plotshape(
-	 hiddenBullCond ? osc[lbR] : na,
+	 hiddenBullCond ? oscBull[lbR] : na,
 	 offset=-lbR,
 	 title="Hidden Bullish Label",
 	 text=" H Bull ",
@@ -113,7 +109,7 @@ alertcondition(hiddenBullCond, title="Hidden bullish divergence in CCI found", m
 // Regular Bearish
 
 // Osc: Lower High
-oscLH = osc[lbR] < valuewhen(phFound, osc[lbR], 1) and _inRange(phFound[1])
+oscLH = oscBear[lbR] < valuewhen(phFound, oscBear[lbR], 1) and _inRange(phFound[1])
 
 // Price: Higher High
 priceHH = high[lbR] > valuewhen(phFound, high[lbR], 1)
@@ -121,7 +117,7 @@ priceHH = high[lbR] > valuewhen(phFound, high[lbR], 1)
 bearCond = plotBear and priceHH and oscLH and phFound
 
 plot(
-	 phFound ? osc[lbR] : na,
+	 phFound ? oscBear[lbR] : na,
 	 offset=-lbR,
 	 title="Regular Bearish",
 	 linewidth=2,
@@ -130,7 +126,7 @@ plot(
 	 )
 
 plotshape(
-	 bearCond ? osc[lbR] : na,
+	 bearCond ? oscBear[lbR] : na,
 	 offset=-lbR,
 	 title="Regular Bearish Label",
 	 text=" Bear ",
@@ -147,7 +143,7 @@ alertcondition(bearCond, title="Regular bearish divergence in CCI found", messag
 // Hidden Bearish
 
 // Osc: Higher High
-oscHH = osc[lbR] > valuewhen(phFound, osc[lbR], 1) and _inRange(phFound[1])
+oscHH = oscBear[lbR] > valuewhen(phFound, oscBear[lbR], 1) and _inRange(phFound[1])
 
 // Price: Lower High
 priceLH = high[lbR] < valuewhen(phFound, high[lbR], 1)
@@ -155,7 +151,7 @@ priceLH = high[lbR] < valuewhen(phFound, high[lbR], 1)
 hiddenBearCond = plotHiddenBear and priceLH and oscHH and phFound
 
 plot(
-	 phFound ? osc[lbR] : na,
+	 phFound ? oscBear[lbR] : na,
 	 offset=-lbR,
 	 title="Hidden Bearish",
 	 linewidth=2,
@@ -164,7 +160,7 @@ plot(
 	 )
 
 plotshape(
-	 hiddenBearCond ? osc[lbR] : na,
+	 hiddenBearCond ? oscBear[lbR] : na,
 	 offset=-lbR,
 	 title="Hidden Bearish Label",
 	 text=" H Bear ",

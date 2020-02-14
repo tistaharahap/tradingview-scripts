@@ -80,6 +80,8 @@ plotshape(
 	 transp=0
 	 )
 
+alertcondition(bullCond, title="Regular bullish divergence in MFI found", message="Check charts for a regular bullish divergence found with MFI")
+
 //------------------------------------------------------------------------------
 // Hidden Bullish
 
@@ -111,6 +113,8 @@ plotshape(
 	 textcolor=textColor,
 	 transp=0
 	 )
+
+alertcondition(hiddenBullCond, title="Hidden bullish divergence in MFI found", message="Check charts for a hidden bullish divergence found with MFI")
 
 //------------------------------------------------------------------------------
 // Regular Bearish
@@ -144,6 +148,8 @@ plotshape(
 	 transp=0
 	 )
 
+alertcondition(bearCond, title="Regular bearish divergence in MFI found", message="Check charts for a regular bearish divergence found with MFI")
+
 //------------------------------------------------------------------------------
 // Hidden Bearish
 
@@ -175,3 +181,5 @@ plotshape(
 	 textcolor=textColor,
 	 transp=0
 	 )
+
+alertcondition(hiddenBearCond, title="Hidden bearish divergence in MFI found", message="Check charts for a hidden bearish divergence found with MFI")

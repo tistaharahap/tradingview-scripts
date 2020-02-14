@@ -1,0 +1,23 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © tista
+
+//@version=4
+study("Engulfing Candles - VWMA", overlay=true)
+
+useEmaAsConfirmation = input(true, title="Use VWMA As Confirmation?", defval=false)
+showEma = input(false, title="Show VWMA Line?", defval=false)
+emaPeriod = input(21, title="VWMA Period (Surpress noise with higher VWMA periods)", defval=21)
+emaPeriod2 = input(200, title="VWMA Period for second line (not used for calculation)", defval=200)
+
+emaVals = vwma(close, emaPeriod)
+ema2Vals = vwma(close, emaPeriod2)
+
+isBullishEngulfing = open[1] > close[1] and open >= close[1] and open <= close[1] and close >= open[1] and (useEmaAsConfirmation ? close <= emaVals : true)
+isBearishEngulfing = open[1] < close[1] and open <= close[1] and open >= close[1] and close <= open[1] and (useEmaAsConfirmation ? close >= emaVals : true)
+
+vals = isBullishEngulfing ? 1 : isBearishEngulfing ? -1 : na
+
+// plotbar(open, high, low, close, title="Engulfing Candle", color = colors)
+plotarrow(vals, title="Engulfing Candles", colorup=color.teal, colordown=color.orange, transp=40, maxheight=15)
+plot(showEma ? emaVals : na, title="VWMAPrimary", color=showEma ? color.blue : na, linewidth=2, transp=0)
+plot(showEma ? ema2Vals : na, title="VWMASecondary", color=showEma ? color.yellow : na, linewidth=2, transp=0)
