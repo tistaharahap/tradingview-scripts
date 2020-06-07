@@ -43,26 +43,45 @@ probSmaDown = sum(probSmaDownSeq, bayesPeriod) / bayesPeriod
 
 probUpSma = probSmaUp / (probSmaUp + probSmaDown)
 
-sigmaProbsDown = nz(probUpBbUpper * probUpBbBasis * probUpSma / probUpBbUpper * probUpBbBasis * probUpSma + ((1 - probUpBbUpper) * (1 - probUpBbBasis) * (1 - probUpSma))) * 100
+sigmaProbsDown = nz(probUpBbUpper * probUpBbBasis * probUpSma / probUpBbUpper * probUpBbBasis * probUpSma + ((1 - probUpBbUpper) * (1 - probUpBbBasis) * (1 - probUpSma)))
 
 // Next candles are breaking Up
 probDownBbUpper = probBbUpperDown / (probBbUpperDown + probBbUpperUp)
 probDownBbBasis = probBbBasisDown / (probBbBasisDown + probBbBasisUp)
 probDownSma = probSmaDown / (probSmaDown + probSmaUp)
 
-sigmaProbsUp = nz(probDownBbUpper * probDownBbBasis * probDownSma / probDownBbUpper * probDownBbBasis * probDownSma + ( (1 - probDownBbUpper) * (1 - probDownBbBasis) * (1 - probDownSma) )) * 100
+sigmaProbsUp = nz(probDownBbUpper * probDownBbBasis * probDownSma / probDownBbUpper * probDownBbBasis * probDownSma + ( (1 - probDownBbUpper) * (1 - probDownBbBasis) * (1 - probDownSma) ))
 
 showNextCandleDown = input(true, title="Plot Next Candles Breaking Down?")
-plot(showNextCandleDown ? sigmaProbsDown : na, title="Next Candle Breaking Down Probs", transp=0, color=color.red, linewidth=2)
+plot(showNextCandleDown ? sigmaProbsDown * 100 : na, title="Next Candle Breaking Down Probs", transp=0, color=color.red, linewidth=2)
 
 showNextCandleUp = input(true, title="Plot Next Candles Breaking Up?")
-plot(showNextCandleUp ? sigmaProbsUp : na, title="Next Candle Breaking Up Probs", transp=0, color=color.green, linewidth=2)
+plot(showNextCandleUp ? sigmaProbsUp * 100 : na, title="Next Candle Breaking Up Probs", transp=0, color=color.green, linewidth=2)
 
-longSignal = sigmaProbsUp < 100 and sigmaProbsUp[1] == 100
-shortSignal = sigmaProbsDown < 100 and sigmaProbsDown[1] == 100
+probPrime = nz(sigmaProbsDown * sigmaProbsUp / sigmaProbsDown * sigmaProbsUp + ( (1 - sigmaProbsDown) * (1 - sigmaProbsUp) ))
+
+showPrime = input(true, title="Plot Prime Probability?")
+plot(showPrime ? probPrime * 100 : na, title="Prime Probability", transp=0, color=color.blue, linewidth=2)
+
+lowerThreshold = input(15.0, title="Lower Threshold")
+
+sideways = probPrime < lowerThreshold / 100 and sigmaProbsUp < lowerThreshold / 100 and sigmaProbsDown < lowerThreshold / 100
+
+longUsingProbPrime = probPrime > lowerThreshold / 100 and probPrime[1] == 0
+longUsingSigmaProbsUp = sigmaProbsUp < 1 and sigmaProbsUp[1] == 1
+
+shortUsingProbPrime = probPrime == 0 and probPrime[1] > lowerThreshold / 100
+shortUsingSigmaProbsDown = sigmaProbsDown < 1 and sigmaProbsDown[1] == 1
+
+longSignal = longUsingProbPrime or longUsingSigmaProbsUp
+shortSignal = shortUsingProbPrime or shortUsingSigmaProbsDown
 
 barcolor(longSignal ? color.lime : na, title="Long Bars")
 barcolor(shortSignal ? color.maroon : na, title="Short Bars")
 
-alertcondition(longSignal, title="Long!", message="Bayesian BBSMA says long at {{close}}")
-alertcondition(shortSignal, title="Short!", message="Bayesian BBSMA says short at {{close}}")
+hzl3 = hline(lowerThreshold, color=#333333, linestyle=hline.style_solid)
+hzl4 = hline(0, color=#333333, linestyle=hline.style_solid)
+fill(hzl3, hzl4, title="Lower Threshold", color=sideways ? color.gray : color.maroon, transp=70)
+
+alertcondition(longSignal, title="Long!", message="Bayesian BBSMA - LONG - {{exchange}}:{{ticker}} at {{close}}")
+alertcondition(shortSignal, title="Short!", message="Bayesian BBSMA - SHORT - {{exchange}}:{{ticker}} at {{close}}")
