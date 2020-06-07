@@ -1,0 +1,92 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © tista
+
+//@version=4
+strategy("Bayesian BBSMA Oscillator Strategy", shorttitle="BayesBBSMAOscStrategy", default_qty_type=strategy.percent_of_equity, default_qty_value=100, currency="USD")
+
+bbSmaPeriod = input(20, title="BB SMA Period")
+bbStdDevMult = input(2.5, title="BB Standard Deviation", maxval=50.0)
+
+bbBasis = sma(close, bbSmaPeriod)
+bbStdDev = bbStdDevMult * stdev(close, bbSmaPeriod)
+
+bbUpper = bbBasis + bbStdDev
+bbLower = bbBasis - bbStdDev
+
+// SMA
+smaPeriod = input(20, title="SMA Period")
+smaValues = sma(close, smaPeriod)
+
+
+// Bayesian Theorem Starts
+bayesPeriod = input(20, title="Bayesian Lookback Period")
+
+// Next candles are breaking Down
+probBbUpperUpSeq = close > bbUpper ? 1 : 0
+probBbUpperUp = sum(probBbUpperUpSeq, bayesPeriod) / bayesPeriod
+probBbUpperDownSeq = close < bbUpper ? 1 : 0
+probBbUpperDown = sum(probBbUpperDownSeq, bayesPeriod) / bayesPeriod
+
+probUpBbUpper = probBbUpperUp / (probBbUpperUp + probBbUpperDown)
+
+probBbBasisUpSeq = close > bbBasis ? 1 : 0
+probBbBasisUp = sum(probBbBasisUpSeq, bayesPeriod) / bayesPeriod
+probBbBasisDownSeq = close < bbBasis ? 1 : 0
+probBbBasisDown = sum(probBbBasisDownSeq, bayesPeriod) / bayesPeriod
+
+probUpBbBasis = probBbBasisUp / (probBbBasisUp + probBbBasisDown)
+
+probSmaUpSeq = close > smaValues ? 1 : 0
+probSmaUp = sum(probSmaUpSeq, bayesPeriod) / bayesPeriod
+probSmaDownSeq = close < smaValues ? 1 : 0
+probSmaDown = sum(probSmaDownSeq, bayesPeriod) / bayesPeriod
+
+probUpSma = probSmaUp / (probSmaUp + probSmaDown)
+
+sigmaProbsDown = nz(probUpBbUpper * probUpBbBasis * probUpSma / probUpBbUpper * probUpBbBasis * probUpSma + ((1 - probUpBbUpper) * (1 - probUpBbBasis) * (1 - probUpSma))) * 100
+
+// Next candles are breaking Up
+probDownBbUpper = probBbUpperDown / (probBbUpperDown + probBbUpperUp)
+probDownBbBasis = probBbBasisDown / (probBbBasisDown + probBbBasisUp)
+probDownSma = probSmaDown / (probSmaDown + probSmaUp)
+
+sigmaProbsUp = nz(probDownBbUpper * probDownBbBasis * probDownSma / probDownBbUpper * probDownBbBasis * probDownSma + ( (1 - probDownBbUpper) * (1 - probDownBbBasis) * (1 - probDownSma) )) * 100
+
+showNextCandleDown = input(true, title="Plot Next Candles Breaking Down?")
+plot(showNextCandleDown ? sigmaProbsDown : na, title="Next Candle Breaking Down Probs", transp=0, color=color.red)
+
+showNextCandleUp = input(true, title="Plot Next Candles Breaking Up?")
+plot(showNextCandleUp ? sigmaProbsUp : na, title="Next Candle Breaking Up Probs", transp=0, color=color.green)
+
+longSignal = sigmaProbsUp < 100 and sigmaProbsUp[1] == 100
+shortSignal = sigmaProbsDown < 100 and sigmaProbsDown[1] == 100
+
+longTrailPerc = input(title="Trail Long Loss (%)", type=input.float, minval=0.0, step=0.1, defval=4) * 0.01
+longStopPrice = 0.0
+
+longStopPrice := if (strategy.position_size > 0)
+    stopValue = close * (1 - longTrailPerc)
+    max(stopValue, longStopPrice[1])
+else
+    0
+
+shortTrailPerc = input(title="Trail Short Loss (%)", type=input.float, minval=0.0, step=0.1, defval=4) * 0.01
+shortStopPrice = 0.0
+
+shortStopPrice := if (strategy.position_size < 0)
+    stopValue = close * (1 + shortTrailPerc)
+    min(stopValue, shortStopPrice[1])
+else
+    999999999
+
+startingYear = input(2019, title="Year started")
+
+doLongs = input(true, title="Calculate longs?")
+strategy.entry("Long", strategy.long, when=strategy.position_size == 0 and longSignal and year >= startingYear and doLongs)
+if (strategy.position_size > 0)
+    strategy.exit(id="Long Trail Stop", stop=longStopPrice)
+
+doShorts = input(true, title="Calculate shorts?")
+strategy.entry("Short", strategy.short, when=strategy.position_size == 0 and shortSignal and year >= startingYear and doShorts)
+if (strategy.position_size < 0)
+    strategy.exit(id="Short Trail Stop", stop=shortStopPrice)
