@@ -101,3 +101,13 @@ This script will highlight bullish and bearish engulfing candles with arrows on 
 This script will highlight bullish and bearish engulfing candles with arrows on your chart. Using VWMA as a confirmation if you wish to draw the arrows. Also shows a second VWMA line for reference.
 
 ![Engulfing Candles - VWMA](https://www.tradingview.com/x/jP4lbLP8/)
+
+## Pivots
+
+Pivot Points to show support/resistance.
+
+### Daily Pivot Points
+
+Uses the previous day's values to project today's pivots. Automatically updated when daily candles are closed.
+
+![Daily Pivot Points](https://www.tradingview.com/x/Q7Q9yWad/)

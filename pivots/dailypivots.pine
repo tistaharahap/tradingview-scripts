@@ -1,0 +1,135 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © tista
+
+//@version=4
+study("Daily Pivot Points", shorttitle="DailyPivots", overlay=true)
+
+ret() => [high[1], low[1], close[1]]
+[h, l, c] = security(syminfo.tickerid, "D", ret(), lookahead=true)
+
+pp = (h + l + c) / 3
+
+r4 = pp + (h - l) * 3
+r3 = pp + (h - l) * 2
+r2 = pp + (h - l)
+r1 = 2 * pp - l
+mpr0 = (pp + r1) / 2
+mpr1 = (r1 + r2) / 2
+mpr2 = (r2 + r3) / 2
+mpr3 = (r3 + r4) / 2
+
+s1 = 2 * pp - h
+s2 = pp - (h - l)
+s3 = pp - (h - l) * 2
+s4 = pp - (h - l) * 3
+mps0 = (pp + s1) / 2
+mps1 = (s1 + s2) / 2
+mps2 = (s2 + s3) / 2
+mps3 = (s3 + s4) / 2
+
+var line ppline = na
+var line r1line = na
+var line r2line = na
+var line r3line = na
+var line r4line = na
+var line mpr0line = na
+var line mpr1line = na
+var line mpr2line = na
+var line mpr3line = na
+var line s1line = na
+var line s2line = na
+var line s3line = na
+var line s4line = na
+var line mps0line = na
+var line mps1line = na
+var line mps2line = na
+var line mps3line = na
+
+if pp[1] != pp
+    line.set_x2(ppline, bar_index)
+    line.set_x2(r1line, bar_index)
+    line.set_x2(r2line, bar_index)
+    line.set_x2(r3line, bar_index)
+    line.set_x2(r4line, bar_index)
+    line.set_x2(mpr0line, bar_index)
+    line.set_x2(mpr1line, bar_index)
+    line.set_x2(mpr2line, bar_index)
+    line.set_x2(mpr3line, bar_index)
+    line.set_x2(s1line, bar_index)
+    line.set_x2(s2line, bar_index)
+    line.set_x2(s3line, bar_index)
+    line.set_x2(s4line, bar_index)
+    line.set_x2(mps0line, bar_index)
+    line.set_x2(mps1line, bar_index)
+    line.set_x2(mps2line, bar_index)
+    line.set_x2(mps3line, bar_index)
+    line.set_extend(ppline, extend.none)
+    line.set_extend(r1line, extend.none)
+    line.set_extend(r2line, extend.none)
+    line.set_extend(r3line, extend.none)
+    line.set_extend(r4line, extend.none)
+    line.set_extend(mpr0line, extend.none)
+    line.set_extend(mpr1line, extend.none)
+    line.set_extend(mpr2line, extend.none)
+    line.set_extend(mpr3line, extend.none)
+    line.set_extend(s1line, extend.none)
+    line.set_extend(s2line, extend.none)
+    line.set_extend(s3line, extend.none)
+    line.set_extend(s4line, extend.none)
+    line.set_extend(mps0line, extend.none)
+    line.set_extend(mps1line, extend.none)
+    line.set_extend(mps2line, extend.none)
+    line.set_extend(mps3line, extend.none)
+    r4line := line.new(bar_index, r4, bar_index, r4, width=1, extend=extend.right, color=#ffffff80)
+    r3line := line.new(bar_index, r3, bar_index, r3, width=1, extend=extend.right, color=#ffffff80)
+    r2line := line.new(bar_index, r2, bar_index, r2, width=1, extend=extend.right, color=#ffffff80)
+    r1line := line.new(bar_index, r1, bar_index, r1, width=1, extend=extend.right, color=#ffffff80)
+    mpr3line := line.new(bar_index, mpr3, bar_index, mpr3, width=1, extend=extend.right, color=#ffffff40)
+    mpr2line := line.new(bar_index, mpr2, bar_index, mpr2, width=1, extend=extend.right, color=#ffffff40)
+    mpr1line := line.new(bar_index, mpr1, bar_index, mpr1, width=1, extend=extend.right, color=#ffffff40)
+    mpr0line := line.new(bar_index, mpr0, bar_index, mpr0, width=1, extend=extend.right, color=#ffffff40)
+    ppline := line.new(bar_index, pp, bar_index, pp, width=2, extend=extend.right, color=color.blue)
+    mps0line := line.new(bar_index, mps0, bar_index, mps0, width=1, extend=extend.right, color=#ffffff40)
+    mps1line := line.new(bar_index, mps1, bar_index, mps1, width=1, extend=extend.right, color=#ffffff40)
+    mps2line := line.new(bar_index, mps2, bar_index, mps2, width=1, extend=extend.right, color=#ffffff40)
+    mps3line := line.new(bar_index, mps3, bar_index, mps3, width=1, extend=extend.right, color=#ffffff40)
+    s1line := line.new(bar_index, s1, bar_index, s1, width=1, extend=extend.right, color=#ffffff80)
+    s2line := line.new(bar_index, s2, bar_index, s2, width=1, extend=extend.right, color=#ffffff80)
+    s3line := line.new(bar_index, s3, bar_index, s3, width=1, extend=extend.right, color=#ffffff80)
+    s4line := line.new(bar_index, s4, bar_index, s4, width=1, extend=extend.right, color=#ffffff80)
+    label.new(bar_index, r4, "R4", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, r3, "R3", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, r2, "R2", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, r1, "R1", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, mpr3, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, mpr2, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, mpr1, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, mpr0, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, pp, "PP", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, mps0, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, mps1, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, mps2, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, mps3, "MP", style=label.style_none, textcolor=#ffffff40)
+    label.new(bar_index, s1, "S1", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, s2, "S2", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, s3, "S3", style=label.style_none, textcolor=color.white)
+    label.new(bar_index, s4, "S4", style=label.style_none, textcolor=color.white)
+
+if not na(ppline) and line.get_x2(ppline) != bar_index
+    line.set_x2(r4line, bar_index)
+    line.set_x2(r3line, bar_index)
+    line.set_x2(r2line, bar_index)
+    line.set_x2(r1line, bar_index)
+    line.set_x2(mpr3line, bar_index)
+    line.set_x2(mpr2line, bar_index)
+    line.set_x2(mpr1line, bar_index)
+    line.set_x2(mpr0line, bar_index)
+    line.set_x2(ppline, bar_index)
+    line.set_x2(mps0line, bar_index)
+    line.set_x2(mps1line, bar_index)
+    line.set_x2(mps2line, bar_index)
+    line.set_x2(mps3line, bar_index)
+    line.set_x2(s1line, bar_index)
+    line.set_x2(s2line, bar_index)
+    line.set_x2(s3line, bar_index)
+    line.set_x2(s4line, bar_index)
